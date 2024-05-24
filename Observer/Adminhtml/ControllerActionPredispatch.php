@@ -2,28 +2,37 @@
 
 namespace Metagento\Core\Observer\Adminhtml;
 
+use Magento\Backend\Model\Auth\Session;
+use Metagento\Core\Helper\Data;
+use Metagento\Core\Model\FeedFactory;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
 
-class ControllerActionPredispatch implements \Magento\Framework\Event\ObserverInterface
+class ControllerActionPredispatch implements ObserverInterface
 {
+    protected $_backendAuthSession;
+    protected $helper;
+    protected $feedFactory;
 
     /**
-     * @param Magento\Backend\Model\Auth\Session $backendAuthSession
-     * @param \Metagento\Core\Helper\Data $helper
+     * @param Session $backendAuthSession
+     * @param Data $helper
+     * @param FeedFactory $feedFactory
      */
     public function __construct(
-        \Magento\Backend\Model\Auth\Session $backendAuthSession,
-        \Metagento\Core\Helper\Data $helper,
-        \Metagento\Core\Model\FeedFactory $feedFactory
+        Session $backendAuthSession,
+        Data $helper,
+        FeedFactory $feedFactory
     ) {
         $this->_backendAuthSession = $backendAuthSession;
-        $this->helper              = $helper;
-        $this->feedFactory         = $feedFactory;
+        $this->helper = $helper;
+        $this->feedFactory = $feedFactory;
     }
 
     /**
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         if ($this->_backendAuthSession->isLoggedIn()
             && $this->helper->isModuleOutputEnabled('Magento_AdminNotification')
